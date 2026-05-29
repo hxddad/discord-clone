@@ -29,7 +29,7 @@ const members = [
 
 function Chat() {
   const [draft, setDraft] = useState('')
-  const [chatMessages, setChatMessages] = useState(messages)
+  const [chatMessages] = useState(messages)
 
   return (
     
