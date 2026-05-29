@@ -1,7 +1,7 @@
 import './App.css'
-import Login from './login/Login'
-import Chat from './chat/Chat'
-import Register from './register/Register'
+import Login from './pages/login/Login'
+import Chat from './pages/chat/Chat'
+import Register from './pages/register/Register'
 import { Routes, Route } from "react-router-dom";
 
 
