@@ -1,9 +1,13 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import env from "dotenv";
+import authRoutes from "./routes/auth.js";
+import mongoose from "mongoose";
+import { setServers } from "dns";
 
-const authRoutes = require("./routes/auth");
+setServers(['8.8.8.8', '1.1.1.1']);
+
+env.config();
 
 const app = express();
 
