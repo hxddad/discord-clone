@@ -1,24 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
 
 const Register: React.FC = () => {
-  const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError('Passwords do not match');
       return;
     }
 
-    setError('');
-    console.log('Register attempt:', { displayName, email, password });
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'Registration failed');
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      navigate('/chat');
+    } catch (err) {
+      setError('Could not connect to server');
+    }
   };
 
   return (
@@ -27,13 +50,13 @@ const Register: React.FC = () => {
         <h1 className="register-title">Create an account</h1>
         <form onSubmit={handleSubmit} className="register-form">
           <div className="register-form-group">
-            <label htmlFor="displayName">Display name</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Choose a display name"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Choose a username"
               required
             />
           </div>
@@ -78,7 +101,7 @@ const Register: React.FC = () => {
 
           {error && <p className="register-error">{error}</p>}
 
-          <button type="submit" className="register-button">
+          <button type="submit" className="register-button" onClick={handleSubmit}>
             Register
           </button>
         </form>
