@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import env from "dotenv";
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./api/auth.js";
 import mongoose from "mongoose";
 import { setServers } from "dns";
 
