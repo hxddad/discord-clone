@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './Chat.css'
 import { io } from "socket.io-client";
+import { Navigate } from 'react-router-dom';
+
 
 const socket = io("http://localhost:5000", {
   withCredentials: true,
@@ -39,6 +41,12 @@ const members = [
 function Chat() {
   const [draft, setDraft] = useState('')
   const [chatMessages] = useState(messages)
+
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    return <Navigate to="/login" />
+  }
 
   return (
     
