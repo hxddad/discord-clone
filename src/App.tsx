@@ -1,4 +1,3 @@
-import './App.css'
 import Home from './pages/Home'
 import Login from './pages/login/Login'
 import Chat from './pages/chat/Chat'
