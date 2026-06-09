@@ -5,6 +5,7 @@ import authRoutes from "./api/auth.js";
 import mongoose from "mongoose";
 import { createServer } from 'node:http';
 import { setServers } from "dns";
+import { Server } from "socket.io";
 
 
 setServers(['8.8.8.8', '1.1.1.1']);
@@ -12,6 +13,8 @@ setServers(['8.8.8.8', '1.1.1.1']);
 env.config();
 
 const app = express();
+
+const server = createServer(app); 
 
 app.use(cors({
   origin: "http://localhost:5173",
@@ -27,6 +30,16 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
+
+  socket.on("send-message", (message, callback) => {
+    console.log("Message received:", message);
+
+    io.emit("receive-message", message);
+
+    if (callback) {
+      callback({ status: "ok" });
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
