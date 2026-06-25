@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import env from "dotenv";
-import authRoutes from "./api/auth.js";
+import authRoutes from "./api/routes/auth.js";
+import serverRoutes from "./api/routes/server.js";
 import mongoose from "mongoose";
 import { createServer } from 'node:http';
 import { setServers } from "dns";
@@ -45,7 +46,7 @@ io.on("connection", (socket) => {
     console.log("User disconnected:", socket.id);
   });
 });
-
+// port 4000 socket server
 server.listen(4000, () => {
   console.log("Server listening on port 4000");
 });
@@ -53,6 +54,8 @@ server.listen(4000, () => {
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/servers", serverRoutes);
 
 const PORT = process.env.PORT || 5000;
 
