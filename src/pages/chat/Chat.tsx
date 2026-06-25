@@ -1,15 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { io } from "socket.io-client";
 import { Navigate } from 'react-router-dom';
+import ServerList from '../../components/ServerList';
 
 
-const socket = io("http://localhost:5000", {
+const socket = io("http://localhost:4000", {
   withCredentials: true,
 });
 
 socket.on("connect", () => {
   console.log("Connected:", socket.id);
 });
+
 const messages = [
   {
     author: 'Yazan',
@@ -36,10 +38,55 @@ const members = [
   { name: 'Maya', status: 'Online' },
   { name: 'Omar', status: 'Online' },
 ]
+  
+export function Chat() {
 
-function Chat() {
-  const [draft, setDraft] = useState('')
-  const [chatMessages] = useState(messages)
+  const [value, setValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+
+
+  useEffect(() => {
+    socket.on("receive-message", (message) => {
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    return () => {
+      socket.off("receive-message");
+    };
+  }, []);
+
+  function onSubmit(event: any) {
+    event.preventDefault();
+
+    if (!value.trim()) return;
+
+    setIsLoading(true);
+
+    const newMessage = {
+      author: "Yazan",
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      text: value,
+      color: "#5865f2",
+    };
+
+    socket.timeout(5000).emit("send-message", newMessage, (err: any) => {
+      setIsLoading(false);
+
+      if (err) {
+        console.error("Message failed to send");
+        return;
+      }
+
+      setValue("");
+    });
+  }
+  
+
+  const [chatMessages, setChatMessages] = useState(messages);
 
   const token = localStorage.getItem("token");
   
@@ -50,13 +97,9 @@ function Chat() {
   return (
     
     <main className="grid h-screen grid-cols-[64px_minmax(0,1fr)] overflow-hidden bg-[#313338] text-[#f5f6fa] min-[720px]:grid-cols-[72px_220px_minmax(0,1fr)] min-[1050px]:grid-cols-[72px_260px_minmax(0,1fr)_240px]">
-      <aside className="flex flex-col items-center gap-3 bg-[#1e1f22] px-0 pt-3 pb-4 min-[720px]:pt-4" aria-label="Servers">
-        <button className="grid h-11 w-11 cursor-pointer place-items-center rounded-[14px] border-0 bg-[#5865f2] text-lg font-extrabold text-[#f5f6fa] transition hover:-translate-y-px min-[720px]:h-12 min-[720px]:w-12" type="button" aria-label="Design Den">
-          D
-        </button>
-      </aside>
-      
 
+      <ServerList />
+      
       <aside className="hidden min-h-0 flex-col border-r border-white/6 bg-[#2b2d31] min-[720px]:flex">
         <header className="flex min-h-[72px] items-center justify-between border-b border-black/25 bg-[#2b2d31] px-[18px] pt-[18px] pb-4">
           <div>
@@ -112,7 +155,7 @@ function Chat() {
           ))}
         </div>
 
-        <form className="mx-3 mb-3.5 flex items-center gap-2.5 rounded-[14px] bg-[#383a40] p-3 min-[720px]:mx-6 min-[720px]:mb-6" /* onSubmit={handleSend} */>
+        <form className="mx-3 mb-3.5 flex items-center gap-2.5 rounded-[14px] bg-[#383a40] p-3 min-[720px]:mx-6 min-[720px]:mb-6" onSubmit={onSubmit}>
           <button className="grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-[10px] border-0 bg-[#4e5058] text-[22px] text-white transition hover:bg-[#5c5f68]" type="button" aria-label="Add attachment">
             +
           </button>
@@ -121,11 +164,11 @@ function Chat() {
             className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-[#f5f6fa] outline-none placeholder:text-[#949ba4]"
             aria-label="Message #general"
             placeholder="Message #general"
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
+            value={value}
+            onChange={ e => setValue(e.target.value) }
           />
 
-          <button className="grid cursor-pointer place-items-center rounded-[10px] border-0 bg-[#5865f2] px-3 py-[9px] font-bold text-white transition hover:-translate-y-px hover:bg-[#4752c4] min-[720px]:px-3.5" type="submit">
+          <button className="grid cursor-pointer place-items-center rounded-[10px] border-0 bg-[#5865f2] px-3 py-[9px] font-bold text-white transition hover:-translate-y-px hover:bg-[#4752c4] min-[720px]:px-3.5" type="submit" disabled={ isLoading }>
             Send
           </button>
         </form>
