@@ -1,12 +1,61 @@
+import { useState, useEffect } from "react";
+import ServerIcon from "./ServerIcon";
+import CreateServer from "./CreateServer";
 
 function ServerList() {
-  return (
-    <aside className="flex flex-col items-center gap-3 bg-[#1e1f22] px-0 pt-3 pb-4 min-[720px]:pt-4" aria-label="Servers">
-      <button className="grid h-11 w-11 cursor-pointer place-items-center rounded-[14px] border-0 bg-[#5865f2] text-lg font-extrabold text-[#f5f6fa] transition hover:-translate-y-px min-[720px]:h-12 min-[720px]:w-12" type="button" aria-label="Design Den">
-        D
+
+  interface Server {
+    _id: string;
+    name: string;
+  }
+
+  const [servers, setServers] = useState<Server[]>([]);
+  const [showCreateServer, setShowCreateServer] = useState(false);
+  const token = localStorage.getItem("token");
+
+  
+    async function fetchServers() {
+      const res = await fetch("http://localhost:5000/api/servers", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      setServers(data);
+    }
+    
+    useEffect(() => {
+      fetchServers();
+    }, [token]);
+
+ return (
+    <div className="flex flex-col items-center space-y-2 p-2">
+   
+
+      {/* create new server button */}
+
+      <button 
+        className="rounded-xl bg-gray-800 w-12 h-12 flex items-center content-center justify-center text-white text-lg font-bold cursor-pointer hover:bg-gray-700"
+        onClick={() => setShowCreateServer(true)}
+        > +
       </button>
-    </aside>
+      
+      {showCreateServer 
+      && 
+      <CreateServer />}
+
+      {servers.map((server) => (
+        <ServerIcon
+          key={server._id}
+          _id={server._id}
+          name={server.name}
+        />
+      ))}
+
+    </div>
   );
 }
+
 
 export default ServerList;
