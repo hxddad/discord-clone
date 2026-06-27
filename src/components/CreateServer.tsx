@@ -1,6 +1,8 @@
 import { useState } from 'react';
-
-function CreateServer(){
+import { useNavigate } from 'react-router-dom';
+  
+  function CreateServer(){
+    const navigate = useNavigate();
     const [serverName, setServerName] = useState('');
     const [isOpenInterface, setOpenInterface] = useState(true);
 
@@ -29,8 +31,9 @@ function CreateServer(){
         console.log('Server created successfully!');
         setServerName(''); // clear the input field after success
         setOpenInterface(false); // close server creation ui after creation
-        // TODO
+        const data = await response.json(); // fetch data
         // Route to the newly created server's page 
+        navigate(`./${data._id}`); 
       } else {
         console.error('Failed to create server');
       }
