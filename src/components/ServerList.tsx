@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ServerIcon from "./ServerIcon";
 import CreateServer from "./CreateServer";
+import { Link } from "react-router";
 
 function ServerList() {
 
@@ -46,11 +47,12 @@ function ServerList() {
       <CreateServer />}
 
       {servers.map((server) => (
-        <ServerIcon
+        <Link
           key={server._id}
-          _id={server._id}
-          name={server.name}
-        />
+          to={`/chat/${server._id}`}
+        >
+          <ServerIcon name={server.name} />
+        </Link>
       ))}
 
     </div>

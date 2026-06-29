@@ -1,29 +1,10 @@
 import express from "express";
 import Server from "../../models/Server.js";
 import authMiddleware from "../middleware.js";
+import { ServerClosedEvent } from "mongodb";
 
 const router = express.Router();
 
-// create a new server
-router.post("/", authMiddleware, async (req, res) => {
-  try {
-    const { name } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: "Server name is required" });
-    }
-
-    const server = await Server.create({
-      name,
-      owner: req.user.id,
-      members: [req.user.id],
-    });
-
-    res.status(201).json(server);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to create server" });
-  }
-});
 
 // get all servers for the authenticated user
 router.get("/", authMiddleware, async (req, res) => {
@@ -38,23 +19,22 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// get a specific server by ID for the authenticated user
+router.get("/:id", async (req, res) => {
+    try {
+        const server = await Server.findById(req.params.id);
 
-router.get("/:serverId", authMiddleware, async (req, res) => {
-  try {
-    const server = await Server.findOne({
-      _id: req.params.serverId,
-      members: req.user.id,
-    });
+        if (!server) {
+            return res.status(404).json({ message: "Server not found" });
+        }
 
-    if (!server) {
-      return res.status(404).json({ message: "Server not found" });
+        res.json(server);
+        const res = await fetch(server)
+        const server = await res.json();
+        
+        navigate(`/servers/${server._id}`);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-
-    res.json(server);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to get server" });
-  }
 });
 
 export default router;

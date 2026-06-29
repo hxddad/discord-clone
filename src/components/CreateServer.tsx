@@ -33,7 +33,7 @@ import { useNavigate } from 'react-router-dom';
         setOpenInterface(false); // close server creation ui after creation
         const data = await response.json(); // fetch data
         // Route to the newly created server's page 
-        navigate(`./${data._id}`); 
+        navigate(`/chat/${data._id}`); 
       } else {
         console.error('Failed to create server');
       }

@@ -4,20 +4,22 @@ import { Navigate } from 'react-router-dom';
 import ServerList from '../../components/ServerList';
 import { useParams } from "react-router-dom";
 
+
+
 const socket = io("http://localhost:4000", {
   withCredentials: true,
 });
 
 socket.on("connect", () => {
-  console.log("Connected:", socket.id);
+  console.log("Connected Home:", socket.id);
 });
 
 const messages = [
   {
     author: 'Yazan',
     time: '10:24 AM',
-    text: 'This is the newly created server.',
-    color: '#FFFFFF',
+    text: 'This is the prototype channel for our Discord-style app.',
+    color: '#5865f2',
   },
   {
     author: 'Maya',
@@ -39,14 +41,14 @@ const members = [
   { name: 'Omar', status: 'Online' },
 ]
   
-export function Chat() {
+export function HomeChat() {
 
-    const { id } = useParams();
+  const { id } = useParams();
 
-    const [value, setValue] = useState('');
-    const [isLoading, setIsLoading] = useState(false); 
-    
-    useEffect(() => {
+  const [value, setValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
     async function fetchServer() {
         const res = await fetch(`http://localhost:5000/api/server/${id}`);
         const data = await res.json();
@@ -108,7 +110,7 @@ export function Chat() {
 
   return (
     
-    <main className="grid h-screen grid-cols-[64px_minmax(0,1fr)] overflow-hidden bg-[#676767] text-[#f5f6fa] min-[720px]:grid-cols-[72px_220px_minmax(0,1fr)] min-[1050px]:grid-cols-[72px_260px_minmax(0,1fr)_240px]">
+    <main className="grid h-screen grid-cols-[64px_minmax(0,1fr)] overflow-hidden bg-[#313338] text-[#f5f6fa] min-[720px]:grid-cols-[72px_220px_minmax(0,1fr)] min-[1050px]:grid-cols-[72px_260px_minmax(0,1fr)_240px]">
 
       <ServerList />
       
@@ -203,4 +205,4 @@ export function Chat() {
   )
 }
 
-export default Chat
+export default HomeChat
