@@ -19,22 +19,22 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
-    try {
-        const server = await Server.findById(req.params.id);
+router.get("/:_id", async (req, res) => {
+  try {
+    const server = await Server.findById(req.params._id);
 
-        if (!server) {
-            return res.status(404).json({ message: "Server not found" });
-        }
-
-        res.json(server);
-        const res = await fetch(server)
-        const server = await res.json();
-        
-        navigate(`/servers/${server._id}`);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+    if (!server) {
+      console.log("Server switch failed: not found", req.params._id);
+      return res.status(404).json({ message: "Server not found" });
     }
+
+    console.log("Server switched to:", server.name);
+
+    return res.json(server);
+  } catch (err) {
+    console.log("Server switch error:", err.message);
+    return res.status(500).json({ message: err.message });
+  }
 });
 
 export default router;

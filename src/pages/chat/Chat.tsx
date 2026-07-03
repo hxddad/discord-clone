@@ -41,21 +41,19 @@ const members = [
   
 export function Chat() {
 
-    const { id } = useParams();
+    const { _id } = useParams();
 
     const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false); 
     
     useEffect(() => {
     async function fetchServer() {
-        const res = await fetch(`http://localhost:5000/api/server/${id}`);
-        const data = await res.json();
-
-        console.log(data);
+        const res = await fetch(`http://localhost:5000/api/servers/${_id}`);
+        console.log(res);
     }
 
     fetchServer();
-}, [id]);
+}, [_id]);
 
 
   useEffect(() => {

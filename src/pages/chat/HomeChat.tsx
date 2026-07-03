@@ -50,7 +50,7 @@ export function HomeChat() {
 
   useEffect(() => {
     async function fetchServer() {
-        const res = await fetch(`http://localhost:5000/api/server/${id}`);
+        const res = await fetch(`http://localhost:5000/api/servers/${id}`);
         const data = await res.json();
 
         console.log(data);

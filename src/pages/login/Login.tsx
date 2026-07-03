@@ -31,7 +31,7 @@ const Login: React.FC = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      navigate('/chat');
+      navigate('/chat/home');
     } catch (err) {
       setError('Could not connect to server');
     }
